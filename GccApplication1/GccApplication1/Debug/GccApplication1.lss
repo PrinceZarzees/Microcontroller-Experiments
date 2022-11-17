@@ -1,0 +1,135 @@
+
+GccApplication1.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         000000aa  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  00800060  00800060  000000fe  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .comment      00000030  00000000  00000000  000000fe  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000130  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000030  00000000  00000000  0000016c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000005d6  00000000  00000000  0000019c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 0000055a  00000000  00000000  00000772  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000020c  00000000  00000000  00000ccc  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000044  00000000  00000000  00000ed8  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    000002e6  00000000  00000000  00000f1c  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_ranges 00000020  00000000  00000000  00001202  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 2a 00 	jmp	0x54	; 0x54 <__ctors_end>
+   4:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   8:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+   c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  10:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  14:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  18:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  1c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  20:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  24:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  28:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  2c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  30:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  34:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  38:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  3c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  40:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  44:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  48:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  4c:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+  50:	0c 94 34 00 	jmp	0x68	; 0x68 <__bad_interrupt>
+
+00000054 <__ctors_end>:
+  54:	11 24       	eor	r1, r1
+  56:	1f be       	out	0x3f, r1	; 63
+  58:	cf e5       	ldi	r28, 0x5F	; 95
+  5a:	d8 e0       	ldi	r29, 0x08	; 8
+  5c:	de bf       	out	0x3e, r29	; 62
+  5e:	cd bf       	out	0x3d, r28	; 61
+  60:	0e 94 4c 00 	call	0x98	; 0x98 <main>
+  64:	0c 94 53 00 	jmp	0xa6	; 0xa6 <_exit>
+
+00000068 <__bad_interrupt>:
+  68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+0000006c <usart_init>:
+#include<util/delay.h>
+#include<stdio.h>
+#include<math.h>
+void usart_init()
+{
+	UCSRA=0b00000000;
+  6c:	1b b8       	out	0x0b, r1	; 11
+	UCSRB=0b00011100;
+  6e:	8c e1       	ldi	r24, 0x1C	; 28
+  70:	8a b9       	out	0x0a, r24	; 10
+	UCSRC=0b10000110;
+  72:	86 e8       	ldi	r24, 0x86	; 134
+  74:	80 bd       	out	0x20, r24	; 32
+	UBRRL=51;
+  76:	83 e3       	ldi	r24, 0x33	; 51
+  78:	89 b9       	out	0x09, r24	; 9
+	UBRRH=0;
+  7a:	10 bc       	out	0x20, r1	; 32
+  7c:	08 95       	ret
+
+0000007e <usart_send>:
+	
+}
+void usart_send(int data)
+{
+	while((UCSRA & (1<<UDRE))==0);
+  7e:	5d 9b       	sbis	0x0b, 5	; 11
+  80:	fe cf       	rjmp	.-4      	; 0x7e <usart_send>
+	if (data & (1<<8))
+  82:	90 ff       	sbrs	r25, 0
+  84:	04 c0       	rjmp	.+8      	; 0x8e <usart_send+0x10>
+	{
+		UCSRB|=(1<<TXB8);
+  86:	2a b1       	in	r18, 0x0a	; 10
+  88:	21 60       	ori	r18, 0x01	; 1
+  8a:	2a b9       	out	0x0a, r18	; 10
+  8c:	03 c0       	rjmp	.+6      	; 0x94 <usart_send+0x16>
+	}
+	else
+	UCSRB=UCSRB & ~(1<<TXB8);
+  8e:	2a b1       	in	r18, 0x0a	; 10
+  90:	2e 7f       	andi	r18, 0xFE	; 254
+  92:	2a b9       	out	0x0a, r18	; 10
+	UDR=data;
+  94:	8c b9       	out	0x0c, r24	; 12
+  96:	08 95       	ret
+
+00000098 <main>:
+	
+}
+int main(void)
+{  
+
+	usart_init();
+  98:	0e 94 36 00 	call	0x6c	; 0x6c <usart_init>
+	while(1)
+	{
+		usart_send(255);
+  9c:	8f ef       	ldi	r24, 0xFF	; 255
+  9e:	90 e0       	ldi	r25, 0x00	; 0
+  a0:	0e 94 3f 00 	call	0x7e	; 0x7e <usart_send>
+  a4:	fb cf       	rjmp	.-10     	; 0x9c <main+0x4>
+
+000000a6 <_exit>:
+  a6:	f8 94       	cli
+
+000000a8 <__stop_program>:
+  a8:	ff cf       	rjmp	.-2      	; 0xa8 <__stop_program>
